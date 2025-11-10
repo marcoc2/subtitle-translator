@@ -142,9 +142,10 @@ class MainWindow(QMainWindow):
 
         self.worker = None # Initialize worker thread
 
-        # Get the path to full_translation_pipeline.py (assume it's in the same directory)
+        # Get the path to full_translation_pipeline.py (in the scripts directory)
         self.pipeline_script_path = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
+            "scripts",
             "full_translation_pipeline.py"
         )
         if not os.path.exists(self.pipeline_script_path):
