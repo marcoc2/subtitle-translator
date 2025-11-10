@@ -19,19 +19,19 @@ def run_command(command, description, cwd=None):
         raise
 
 def full_translation_pipeline(video_file_path, target_language="Brazilian Portuguese", api_key=None):
-    # Determine the directory of the current script (which is gemini-srt-translator)
+    # Determine the directory of the current script (scripts directory)
     current_script_dir = os.path.dirname(os.path.abspath(__file__))
-    # Parent directory is /home/marco/workspace/scripts/extract_sub/
+    # Parent directory (root of the project)
     parent_dir = os.path.dirname(current_script_dir)
 
-    # Define the output directory for all generated artifacts
-    output_dir = os.path.join(current_script_dir, "output")
+    # Define the output directory for all generated artifacts (in project root)
+    output_dir = os.path.join(parent_dir, "output")
     os.makedirs(output_dir, exist_ok=True)
 
-    # Define paths for auxiliary scripts
-    extract_sub_script_path = os.path.join(parent_dir, "extract_sub.sh")
-    clean_dedup_srt_script_path = os.path.join(parent_dir, "clean_dedup_srt.py")
-    reembed_srt_script_path = os.path.join(parent_dir, "reembed_srt.py")
+    # Define paths for auxiliary scripts (all in the scripts directory)
+    extract_sub_script_path = os.path.join(current_script_dir, "extract_sub.sh")
+    clean_dedup_srt_script_path = os.path.join(current_script_dir, "clean_dedup_srt.py")
+    reembed_srt_script_path = os.path.join(current_script_dir, "reembed_srt.py")
 
     # Validate inputs
     video_file_path = os.path.abspath(video_file_path) # Ensure video_file_path is always absolute
@@ -60,8 +60,8 @@ def full_translation_pipeline(video_file_path, target_language="Brazilian Portug
     output_video_path = os.path.join(output_dir, output_video_filename)
 
     # 1. Extract subtitles
-    # We run extract_sub.sh from parent_dir, but it outputs to video_file_path's directory
-    run_command([extract_sub_script_path, video_file_path], "Extraindo legendas", cwd=parent_dir)
+    # We run extract_sub.sh from scripts directory, it outputs to video_file_path's directory
+    run_command([extract_sub_script_path, video_file_path], "Extraindo legendas", cwd=current_script_dir)
 
     # Move the extracted .srt from video's directory to output_dir
     if os.path.exists(extracted_srt_path_in_video_dir):
@@ -77,7 +77,7 @@ def full_translation_pipeline(video_file_path, target_language="Brazilian Portug
         return
 
     # 2. Clean and deduplicate SRT
-    run_command(["python", clean_dedup_srt_script_path, extracted_srt_path_in_output], "Limpando e deduplicando legendas", cwd=parent_dir)
+    run_command(["python", clean_dedup_srt_script_path, extracted_srt_path_in_output], "Limpando e deduplicando legendas", cwd=current_script_dir)
     if not os.path.exists(cleaned_srt_path):
         print(f"Erro: Arquivo SRT limpo esperado em '{cleaned_srt_path}' não encontrado.")
         return
@@ -100,7 +100,7 @@ def full_translation_pipeline(video_file_path, target_language="Brazilian Portug
         output_video_path,
         "--lang", "por", # Assuming "por" is Portuguese code
         "--default"
-    ], "Reembutindo legenda traduzida no vídeo", cwd=parent_dir)
+    ], "Reembutindo legenda traduzida no vídeo", cwd=current_script_dir)
 
     print(f"\nProcesso concluído! Vídeo com legenda traduzida em: {output_video_path}")
 
