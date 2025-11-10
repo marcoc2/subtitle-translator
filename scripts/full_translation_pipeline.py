@@ -42,6 +42,7 @@ def full_translation_pipeline(video_file_path, target_language="Brazilian Portug
     # Extract video basename and name without extension
     video_basename = os.path.basename(video_file_path)
     video_name_without_ext = os.path.splitext(video_basename)[0]
+    video_ext = os.path.splitext(video_basename)[1]  # Preserva a extensão original (.mkv ou .mp4)
 
     # Define names for intermediate and final files, placing them in the output_dir
     extracted_srt_filename = f"{video_name_without_ext}.English.srt"
@@ -55,7 +56,7 @@ def full_translation_pipeline(video_file_path, target_language="Brazilian Portug
     translated_srt_filename = f"{video_name_without_ext}.{target_language.replace(' ', '_').replace('(','').replace(')','').lower()}.clean_translated.srt"
     translated_srt_path = os.path.join(output_dir, translated_srt_filename)
 
-    output_video_filename = f"{video_name_without_ext}_translated_{target_language.replace(' ', '_').replace('(','').replace(')','').lower()}.mkv"
+    output_video_filename = f"{video_name_without_ext}_translated_{target_language.replace(' ', '_').replace('(','').replace(')','').lower()}{video_ext}"
     output_video_path = os.path.join(output_dir, output_video_filename)
 
     # 1. Extract subtitles
@@ -104,8 +105,8 @@ def full_translation_pipeline(video_file_path, target_language="Brazilian Portug
     print(f"\nProcesso concluído! Vídeo com legenda traduzida em: {output_video_path}")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Full pipeline to extract, clean, translate, and reembed subtitles.")
-    parser.add_argument('video_file', help="Path to the input MKV video file.")
+    parser = argparse.ArgumentParser(description="Full pipeline to extract, clean, translate, and reembed subtitles for MKV and MP4 files.")
+    parser.add_argument('video_file', help="Path to the input video file (MKV or MP4).")
     parser.add_argument('--lang', default="Brazilian Portuguese", help="Target language for translation. Default is 'Brazilian Portuguese'.")
     parser.add_argument('--api-key', help="Your Gemini API key. If not provided, assumes GEMINI_API_KEY environment variable is set.")
 

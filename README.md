@@ -1,14 +1,15 @@
 # 🚀 Subtitle Translator
 
-Este projeto fornece uma solução completa para extrair, limpar, traduzir e reembutir legendas em arquivos de vídeo MKV, utilizando a API Google Gemini AI para tradução.
+Este projeto fornece uma solução completa para extrair, limpar, traduzir e reembutir legendas em arquivos de vídeo MKV e MP4, utilizando a API Google Gemini AI para tradução.
 
 ## ✨ Funcionalidades
 
-- **Extração de Legendas**: Extrai legendas SRT de arquivos MKV.
+- **Extração de Legendas**: Extrai legendas SRT de arquivos MKV e MP4.
 - **Limpeza de Legendas**: Remove tags HTML e duplicações de legendas SRT.
 - **Tradução AI**: Traduz legendas SRT para o idioma desejado (padrão: Português do Brasil) usando a API Google Gemini.
-- **Reembutimento de Legendas**: Reembuti a legenda traduzida de volta no arquivo MKV original, criando um novo arquivo de vídeo.
+- **Reembutimento de Legendas**: Reembuti a legenda traduzida de volta no arquivo de vídeo original (MKV ou MP4), criando um novo arquivo de vídeo com legendas.
 - **Interface Gráfica (GUI)**: Uma aplicação PyQt6 para gerenciar e executar o pipeline de tradução de forma interativa, com suporte a arrastar e soltar.
+- **Suporte Multi-formato**: Funciona tanto com arquivos MKV quanto MP4, preservando o formato original do vídeo.
 
 ## 📦 Instalação
 
@@ -31,8 +32,8 @@ Este projeto fornece uma solução completa para extrair, limpar, traduzir e ree
     ```
 
 4.  **Instale ferramentas externas:**
-    *   **FFmpeg**: Necessário para extração de legendas. [Download FFmpeg](https://ffmpeg.org/download.html)
-    *   **mkvtoolnix**: Necessário para reembutir legendas. [Download mkvtoolnix](https://mkvtoolnix.download/)
+    *   **FFmpeg**: Necessário para extração de legendas e reembutimento em arquivos MP4. [Download FFmpeg](https://ffmpeg.org/download.html)
+    *   **mkvtoolnix**: Necessário para reembutir legendas em arquivos MKV. [Download mkvtoolnix](https://mkvtoolnix.download/)
 
 ## 🔑 Configuração da API Key do Gemini
 
@@ -53,23 +54,28 @@ Este projeto fornece uma solução completa para extrair, limpar, traduzir e ree
     ```bash
     python gui_translator.py
     ```
-2.  Adicione arquivos de vídeo MKV arrastando e soltando-os na lista ou usando "Arquivo -> Abrir Vídeo(s)...".
+2.  Adicione arquivos de vídeo (MKV ou MP4) arrastando e soltando-os na lista ou usando "Arquivo -> Abrir Vídeo(s)...".
 3.  (Opcional) Ajuste o idioma de destino ou insira sua chave API do Gemini.
 4.  Clique em "Traduzir Vídeos" para iniciar o processo.
 
-Todos os arquivos gerados (legendas intermediárias e o vídeo final com legenda traduzida) serão salvos na pasta `output/` dentro do diretório do projeto.
+Todos os arquivos gerados (legendas intermediárias e o vídeo final com legenda traduzida) serão salvos na pasta `output/` dentro do diretório do projeto. O formato original do vídeo (MKV ou MP4) será preservado.
 
 ### Via Linha de Comando (CLI) - Pipeline Completo
 
 Para usar o pipeline completo via CLI, execute o script `full_translation_pipeline.py`:
 
 ```bash
-python scripts/full_translation_pipeline.py <CAMINHO_PARA_VIDEO.mkv> [--lang "Idioma de Destino"] [--api-key "SUA_CHAVE_API"]
+python scripts/full_translation_pipeline.py <CAMINHO_PARA_VIDEO> [--lang "Idioma de Destino"] [--api-key "SUA_CHAVE_API"]
 ```
 
-**Exemplo:**
+**Exemplo com MKV:**
 ```bash
 python scripts/full_translation_pipeline.py "/caminho/para/seu/video.mkv" --lang "Brazilian Portuguese"
+```
+
+**Exemplo com MP4:**
+```bash
+python scripts/full_translation_pipeline.py "/caminho/para/seu/video.mp4" --lang "Brazilian Portuguese"
 ```
 
 ## ⚙️ Estrutura do Projeto
