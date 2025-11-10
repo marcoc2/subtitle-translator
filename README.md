@@ -32,8 +32,7 @@ Este projeto fornece uma solução completa para extrair, limpar, traduzir e ree
     ```
 
 4.  **Instale ferramentas externas:**
-    *   **FFmpeg**: Necessário para extração de legendas e reembutimento em arquivos MP4. [Download FFmpeg](https://ffmpeg.org/download.html)
-    *   **mkvtoolnix**: Necessário para reembutir legendas em arquivos MKV. [Download mkvtoolnix](https://mkvtoolnix.download/)
+    *   **FFmpeg**: Necessário para extração e reembutimento de legendas em arquivos MKV e MP4. [Download FFmpeg](https://ffmpeg.org/download.html)
 
 ## 🔑 Configuração da API Key do Gemini
 

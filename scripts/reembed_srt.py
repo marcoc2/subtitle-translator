@@ -24,61 +24,44 @@ def reembed_srt(video_file, srt_file, output_file, language='por', default_track
     # Detecta o formato de saída pela extensão
     output_ext = os.path.splitext(output_file)[1].lower()
 
-    if output_ext == '.mkv':
-        # Usa mkvmerge para MKV
-        command = [
-            'mkvmerge', '-o', output_file, video_file,
-            '--language', f'0:{language}',
-        ]
-
-        # Adiciona a flag --default-track se for para ser a faixa padrão
-        if default_track:
-            command.extend(['--default-track', '0'])
-
-        command.append(srt_file)
-
-        print(f"Executando comando (mkvmerge): {' '.join(command)}")
-        try:
-            subprocess.run(command, check=True, text=True, capture_output=True)
-            print(f"Legenda '{srt_file}' reembutida com sucesso em '{output_file}'.")
-        except subprocess.CalledProcessError as e:
-            print(f"Erro ao reembutir legenda: {e}")
-            print(f"Stdout: {e.stdout}")
-            print(f"Stderr: {e.stderr}")
-        except FileNotFoundError:
-            print("Erro: 'mkvmerge' não encontrado. Certifique-se de que o mkvtoolnix está instalado e no PATH.")
-
-    elif output_ext == '.mp4':
-        # Usa FFmpeg para MP4
-        # FFmpeg copia os streams de vídeo e áudio, e adiciona a legenda como nova stream
-        command = [
-            'ffmpeg', '-y',  # -y sobrescreve arquivo de saída se existir
-            '-i', video_file,
-            '-i', srt_file,
-            '-c', 'copy',  # Copia streams sem recodificar (mais rápido)
-            '-c:s', 'mov_text',  # Codec de legenda para MP4
-            '-metadata:s:s:0', f'language={language}',
-        ]
-
-        # Para MP4, o conceito de "default" é diferente, mas podemos marcar com disposition
-        if default_track:
-            command.extend(['-disposition:s:0', 'default'])
-
-        command.append(output_file)
-
-        print(f"Executando comando (ffmpeg): {' '.join(command)}")
-        try:
-            subprocess.run(command, check=True, text=True, capture_output=True)
-            print(f"Legenda '{srt_file}' reembutida com sucesso em '{output_file}'.")
-        except subprocess.CalledProcessError as e:
-            print(f"Erro ao reembutir legenda: {e}")
-            print(f"Stdout: {e.stdout}")
-            print(f"Stderr: {e.stderr}")
-        except FileNotFoundError:
-            print("Erro: 'ffmpeg' não encontrado. Certifique-se de que o FFmpeg está instalado e no PATH.")
-
-    else:
+    if output_ext not in ['.mkv', '.mp4']:
         print(f"Erro: Formato de saída '{output_ext}' não suportado. Use .mkv ou .mp4")
+        return
+
+    # Usa FFmpeg para ambos os formatos (MKV e MP4)
+    # Constrói o comando base
+    command = [
+        'ffmpeg', '-y',  # -y sobrescreve arquivo de saída se existir
+        '-i', video_file,
+        '-i', srt_file,
+        '-c', 'copy',  # Copia streams de vídeo/áudio sem recodificar (mais rápido)
+    ]
+
+    # Define o codec de legenda apropriado para cada formato
+    if output_ext == '.mkv':
+        command.extend(['-c:s', 'srt'])  # Codec de legenda para MKV
+    elif output_ext == '.mp4':
+        command.extend(['-c:s', 'mov_text'])  # Codec de legenda para MP4
+
+    # Adiciona metadados de idioma
+    command.extend(['-metadata:s:s:0', f'language={language}'])
+
+    # Define a legenda como padrão se solicitado
+    if default_track:
+        command.extend(['-disposition:s:0', 'default'])
+
+    command.append(output_file)
+
+    print(f"Executando comando (ffmpeg): {' '.join(command)}")
+    try:
+        subprocess.run(command, check=True, text=True, capture_output=True)
+        print(f"Legenda '{srt_file}' reembutida com sucesso em '{output_file}'.")
+    except subprocess.CalledProcessError as e:
+        print(f"Erro ao reembutir legenda: {e}")
+        print(f"Stdout: {e.stdout}")
+        print(f"Stderr: {e.stderr}")
+    except FileNotFoundError:
+        print("Erro: 'ffmpeg' não encontrado. Certifique-se de que o FFmpeg está instalado e no PATH.")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Reembeds an SRT subtitle file into a video file (MKV or MP4).")
